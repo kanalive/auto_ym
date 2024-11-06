@@ -4,17 +4,23 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 class TradingViewNewsScraper:
-    def __init__(self, symbol="TVC:AU03Y", lang="en", time_window=24):
+    def __init__(self, symbol, lang="en", time_window=24):
         # Initialize with default symbol, language, and time window (in hours)
         self.symbol = symbol
         self.lang = lang
         self.time_window = time_window
-        self.base_url = f'https://news-headlines.tradingview.com/v2/view/headlines/symbol?client=overview&lang={self.lang}&symbol={self.symbol}'
+        self.base_url = self.get_base_url(self.lang, self.symbol)
         self.news_to_scrape = []
+
+    def get_base_url(self, lang, symbol):
+        base_url = f'https://news-headlines.tradingview.com/v2/view/headlines/symbol?client=overview&lang={lang}&symbol={symbol}'
+        print(base_url)
+        return base_url
 
     def fetch_news(self):
         # Fetch the JSON data from the TradingView news API
         response = requests.get(self.base_url)
+
         if response.status_code == 200:
             return response.json()
         else:
