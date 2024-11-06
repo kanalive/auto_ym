@@ -65,19 +65,30 @@ if st.button("Fetch News and Analyze Trading Bias"):
 
             # Define today's prompt including both news and technical indicators
             user_prompt = {
-                "role": "user", 
+                "role": "user",
                 "content": f"""
-                Today's news about the Australian 3 Years Govt Bond Yield, USD/AUD and US T-Bond Futures :
+                Please analyze today's news regarding the Australian 3-Year Government Bond Yield, USD/AUD, and U.S. Treasury Bond Futures:
+
+                News Summary:
                 {compiled_news}
 
-                The technical indicators for today are as follows:
-
+                Technical indicators for YM1 (3-Year Australian Bond Future) are as follows:
                 - MACD Histogram: {macd_histogram}
                 - MACD Line: {macd_line}
                 - Signal Line: {signal_line}
                 - RSI: {rsi}
 
-                Based on the news, extract the key factors and indicators on U.S. and Australian 3-Year Bond Yields, Global Inflation Data and Market Sentiment. In conjuction with the technical indicators, analyze the impact on the 3-year Australian government bond future (YM1) and provide your prediction for tomorrow's trading bias. Explain whether it is bullish or bearish and why.
+                Instructions:
+                1. **Extract Key Drivers**: Identify and summarize key factors from the news impacting the Australian and U.S. 3-Year Bond Yields, global inflation data, and overall market sentiment.
+                2. **Analyze Technical Indicators**: Use the provided technical indicators (MACD, Signal Line, Histogram, and RSI) to assess YM1's current momentum and trend strength.
+                3. **Trading Bias Prediction**: Based on the news analysis and technical indicators:
+                - Determine whether the trading bias for YM1 tomorrow is likely to be **bullish** or **bearish**.
+                - Provide a clear explanation of the reasons behind this bias, focusing on the interaction between the fundamental news factors and technical momentum signals.
+                
+                Output your response as follows:
+                - **Key Factors from News**: [List of extracted factors]
+                - **Technical Analysis**: [Explanation of indicator status and implications]
+                - **Trading Bias Prediction**: [Bullish or Bearish, with a detailed rationale]
                 """
             }
 
@@ -85,8 +96,8 @@ if st.button("Fetch News and Analyze Trading Bias"):
             response = openai.ChatCompletion.create(
                 model="gpt-4o",  # You can use gpt-4-turbo for cheaper and faster results
                 messages=[system_prompt, user_prompt],
-                temperature=0.5,  # Adjust this if you want more conservative or creative responses
-                max_tokens=500
+                temperature=0.4,  # Adjust this if you want more conservative or creative responses
+                max_tokens=16384
             )
 
             # Parse and display the analysis
