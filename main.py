@@ -27,18 +27,32 @@ us_inflation_scraper = TradingViewNewsScraper(symbol="ECONOMICS%3AUSIRYY", time_
 st.subheader("Technical Indicators Input")
 
 # Current MACD values
-macd_histogram = st.number_input("MACD Histogram:", step=0.0001, value=0.00017)
-macd_line = st.number_input("MACD Line:", step=0.0001)
-signal_line = st.number_input("Signal Line:", step=0.0001)
+macd_histogram = st.number_input("MACD Histogram:", step=0.0001, value=0.00017, format="%0.4f")
+macd_line = st.number_input("MACD Line:", step=0.0001, format="%0.4f")
+signal_line = st.number_input("Signal Line:", step=0.0001, format="%0.4f")
 
 # RSI input
-rsi = st.number_input("RSI value:", step=0.01)
+rsi = st.number_input("RSI value:", step=0.01, format="%0.2f")
 
 st.subheader("Today's price")
 px_open = st.number_input("Open")
 px_high = st.number_input("High")
 px_low = st.number_input("Low")
 px_last = st.number_input("Last")
+
+st.subheader("US Govt Bond Yield")
+us_3ybond_col1, us_3ybond_col2 = st.columns(2)
+three_y_yield = us_3ybond_col1.number_input("3y Yield", format="%0.2f")
+three_y_yield_move = us_3ybond_col1.number_input("% Moved",  format="%0.2f", key="three_y_yield_move")
+
+us_10ybond_col1, us_10ybond_col2 = st.columns(2)
+ten_y_yield = us_10ybond_col1.number_input("10y Yield", format="%0.2f")
+ten_y_yield_move = us_10ybond_col2.number_input("% Moved", format="%0.2f", key="ten_y_yield_move")
+
+st.subheader("USD-AUD Exchange Rate")
+fx_col1, fx_col2 = st.columns(2)
+fx_usd_aud = fx_col1.number_input("USD-AUD",  format="%0.2f")
+fx_usd_aud_move = fx_col2.number_input("% Moved",  format="%0.2f", key="fx_move")
 
 now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -68,11 +82,11 @@ if st.button("Fetch News and Analyze Trading Bias"):
             # Define the macroeconomic expert role using a system message
             system_prompt = {
                 "role": "system", 
-                "content": """You are an advanced market analyst specializing in interpreting economic news, technical indicators, and recent market movements to provide actionable trading insights. For each request, analyze the upcoming economic events, relevant market indicators, and price trends to develop a comprehensive bid strategy.
+                "content": """You are an expert in macroeconomic and bond market analysis. Use the following inputs on recent market data, technical indicators, and news to predict the likely direction for the Australian 3-year bond future (YM1) in the next trading session. The analysis should include a trading bias, bid range recommendations, and rationale. Additionally, highlight any upcoming economic events or data releases and explain the potential impact of varying outcomes on YM1.
 
-                            1. **Economic and Market Developments**: Evaluate the potential impact of upcoming economic events or recent news on the asset (e.g., YM1). Explain how the news might influence market sentiment, yields, or other key economic variables.
+                            1. **Recent Market News**: Analyze any significant economic or policy-related updates, including central bank actions, major economic indicators, or global economic news, especially from Australia, the U.S., or China. Identify any upcoming economic events or data mentioned in the news and provide possible outcomes and their implications for YM1.
 
-                            2. **Technical Indicator Analysis**: Analyze provided MACD and RSI data to interpret current price momentum, trend strength, and possible price levels. Identify any oversold/overbought conditions or indications of reversal or continuation.
+                            2. **Today's pricing data and Technical indicators Analysis**: Analyze provided data to interpret current price momentum, trend strength, and possible price levels. Identify any oversold/overbought conditions or indications of reversal or continuation.
 
                             3. **Trading Bias and Scenario Analysis**: Based on the economic context and technical analysis, outline possible bullish or bearish scenarios. Assess how each scenario would influence the trading bias for the asset (bullish, bearish, or neutral).
 
@@ -93,21 +107,25 @@ if st.button("Fetch News and Analyze Trading Bias"):
                 News Summary:
                 {compiled_news}
 
-                Technical indicators for YM1 (3-Year Australian Bond Future) are as follows:
+                Today's pricing data and Technical indicators for YM1 (3-Year Australian Bond Future) are as follows:
                 - Datetime Now: {now_str}
                 - Today's YM1 price in Open:{px_open}, High: {px_high}, Low: {px_low}, Last: {px_last}
+                - Today's 3 Year U.S. Government Bond Yield:{three_y_yield}, moved {three_y_yield_move}% from yesterday
+                - Today's 10 Year U.S. Government Bond Yield:{ten_y_yield}, moved {ten_y_yield_move}% from yesterday
+                - Today's USD/AUD exchange rate: {fx_usd_aud}, moved {fx_usd_aud_move}% from yesterday
                 - MACD Histogram: {macd_histogram}
                 - MACD Line: {macd_line}
                 - Signal Line: {signal_line}
                 - RSI: {rsi}
 
                 Request:
-                Please analyze the impact of the upcoming news on YM1's direction, using the MACD and RSI data to provide insights on current momentum and price stability. Based on this analysis:
-                1. Describe the potential outcomes based on varying scenarios of the fiscal package (e.g., strong, moderate, minimal support).
-                2. Provide a trading bias for each scenario.
-                3. Suggest a primary bid range for the next trading session and identify contingency bids for both upside and downside scenarios.
-                4. Include a rationale for each bid range to help refine trading strategy.
-
+                Please analyze the impact of the upcoming news on YM1's direction, using the MACD, US government bond yield and USDAUD exchange rate data to provide insights on current momentum and price stability. Based on this analysis:
+                1. Key Market Observations, summarize any major market movements, explain how changes can impact Australian 3-year bond future (YM1) in the next trading session. Highlight any recent economic or policy developments that might influence investor sentiment toward YM1.
+                2. Technical Indicators Analysis. 
+                3. Provide a trading bias for the next trading session, include a rationale.
+                4. Suggest a primary bid range for the next trading session.
+                5. Scenario Analysis for Upcoming Events: If the news highlights any upcoming economic event or data release, outline potential scenarios and their likely impact on YM1. For instance, discuss outcomes if inflation data exceeds expectations versus if it undershoots and describe the probable directional impact on YM1. Identify contingency bids for both upside and downside scenarios.
+                6. Conclude with a short summary of the key analysis points, including the overall trading bias, recommended bid ranges, and any potential impacts from upcoming events.
                 """
             }
 
